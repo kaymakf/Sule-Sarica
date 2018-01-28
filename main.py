@@ -103,6 +103,23 @@ for i in range(len(n)-1):
     b -= n[i+1]
 
 
+G.nodes[-1]['value'] = math.inf
+G.nodes[-2]['value'] = Fraction(0, 1)
+G.nodes[-3]['value'] = Fraction(1, 1)
+pb = -1
+b = -2
+c = -4
+for i in range(len(n)-1):
+    for j in range(n[i+1]-1):
+        G.nodes[c]['value'] = fareySum(G.nodes[c + 1]['value'], G.nodes[b]['value'])
+        c -= 1
+    pb = b
+    b -= n[i+1]
+
+
+
+#for i in range(-4, -numOfNodes-1, -1):
+#    G.nodes[i]['value'] = G.nodes[i+1]['value']
 
 
 
