@@ -7,7 +7,7 @@ import numpy as np
 from sympy.solvers import solve
 from sympy import Symbol
 from sympy import sympify
-from sympy.core.sympify import kernS
+from sympy.parsing.sympy_parser import (parse_expr, standard_transformations, implicit_application)
 
 
 def normalizeFraction(f):
@@ -91,7 +91,7 @@ def findThePath(n):
     return spaths
 
 
-def tamsayiSurekliKesri(p):
+def integerContinuedFraction(p):
     c = [p[1]]
     x = Symbol('x')
     for i in range(1, len(p)-1):
@@ -104,13 +104,41 @@ def tamsayiSurekliKesri(p):
         eq = sympify(eq)
         c.append(list(solve(eq, x)).pop())
 
-    for o in c:
-        print(o, end=", ")
+    return c
 
 
+def getTheWord(c):
+    word = [("TS", int(c[0] - 1))]
 
+    for i in range(1, len(c) - 1):
+        word.append(("TSS", 1))
+        word.append(("TS", int(c[i] - 2)))
 
+    word.append(("TSS", 1))
+    word.append(("TS", int(c[len(c) - 1] - 1)))
+    word.append(("R", 1))
 
+    newWord = ""
+    for w in word:
+        if w[1] >= 0:
+            for j in range(w[1]):
+                newWord += w[0]
+        elif w[0] == "TS":
+            for j in range(-w[1]):
+                newWord += "SST"
+
+    print(word)
+    print(newWord)
+
+    newWord = newWord.replace("TT", "").replace("SSS", "")
+
+    print(newWord)
+
+    return newWord
+
+#    i=0
+#    while i < len(newWord):
+#        if newWord[i:i+2] == "TS":
 
 
 
@@ -136,7 +164,16 @@ sp = findThePath(n)
 for s in sp:
     print(s)
 
+for i in range(len(sp)):
+    c = integerContinuedFraction(sp[i])
+    for s in c:
+        print(s, end='  ')
+    print()
 
-tamsayiSurekliKesri(sp[0])
+c = integerContinuedFraction(sp[0])
+
+
+word = getTheWord(c)
+
 
 
