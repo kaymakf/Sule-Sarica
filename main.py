@@ -13,6 +13,10 @@ from sympy.parsing.sympy_parser import (parse_expr, standard_transformations, im
 def normalizeFraction(f):
     return Fraction(f.numerator % f.denominator, f.denominator)
 
+def fib(n):
+    if n == 0: return 0
+    if n == 1 or n == 2: return 1
+    return fib(n-1) + fib(n-2)
 
 def simpleContinuedFraction(f):
     n = [0]
@@ -26,10 +30,8 @@ def simpleContinuedFraction(f):
     n.append(b.denominator)
     return n
 
-
 def fareySum(f1, f2):
     return Fraction(f1.numerator + f2.numerator, f1.denominator + f2.denominator)
-
 
 def findThePath(n):
     G = nx.Graph()
@@ -90,7 +92,6 @@ def findThePath(n):
 
     return spaths
 
-
 def integerContinuedFraction(p):
     c = [p[1]]
     x = Symbol('x')
@@ -105,7 +106,6 @@ def integerContinuedFraction(p):
         c.append(list(solve(eq, x)).pop())
 
     return c
-
 
 def getTheWord(c):
     word = [("TS", int(c[0] - 1))]
@@ -130,19 +130,57 @@ def getTheWord(c):
     print(word)
     print(newWord)
 
-    newWord = newWord.replace("TT", "").replace("SSS", "")
+    oldWord = ""
+    while oldWord != newWord:
+        oldWord = newWord
+        newWord = newWord.replace("SSS", "").replace("TT", "")
 
     print(newWord)
 
-    return newWord
+    newWord = newWord.replace("TSS", "Rh").replace("TS", "Rf")
+    print(newWord)
+    newWord = newWord.replace("RhR", "f").replace("RfR", "h")
+    print(newWord)
 
-#    i=0
-#    while i < len(newWord):
-#        if newWord[i:i+2] == "TS":
+    while newWord.count('R') > 1:
+        newWord = newWord.replace("Rh", "fR").replace("Rf", "hR").replace("RT", "TR").replace("RR", "")
+
+    print(newWord)
+
+    x = []
+    i=0
+    while i < len(newWord):
+        letter = newWord[i]
+        j=1
+        if i+j < len(newWord):
+            while newWord[i+j] == letter:
+                j+=1
 
 
+        x.append((newWord[i], j))
+        i += j
 
+    print(x)
 
+    return x
+
+def getTheMatrix(word):
+    m = []
+    for w in word:
+        if w[0] == 'f':
+            matr = np.matrix([[fib(w[1] - 1), fib(w[1])],
+                              [fib(w[1]), fib(w[1] + 1)]])
+
+        elif w[0] == 'h':
+            matr = np.matrix([[fib(w[1] + 1), fib(w[1])],
+                              [fib(w[1]), fib(w[1] - 1)]])
+
+        elif w[0] == 'T':
+            m.insert(0, 'T')
+
+        m.append(matr)
+
+    return m
 
 
 while True:
@@ -172,8 +210,13 @@ for i in range(len(sp)):
 
 c = integerContinuedFraction(sp[0])
 
-
 word = getTheWord(c)
+
+m = getTheMatrix(word)
+
+for n in m:
+    print(n)
+
 
 
 
