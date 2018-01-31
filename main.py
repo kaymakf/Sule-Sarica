@@ -8,6 +8,7 @@ from sympy.solvers import solve
 from sympy import Symbol
 from sympy import sympify
 from sympy.parsing.sympy_parser import (parse_expr, standard_transformations, implicit_application)
+from pandas import DataFrame
 
 
 def normalizeFraction(f):
@@ -168,17 +169,15 @@ def getTheMatrix(word):
     m = []
     for w in word:
         if w[0] == 'f':
-            matr = np.matrix([[fib(w[1] - 1), fib(w[1])],
-                              [fib(w[1]), fib(w[1] + 1)]])
+            m.append([[fib(w[1] - 1), fib(w[1])],
+                     [fib(w[1]), fib(w[1] + 1)]])
 
         elif w[0] == 'h':
-            matr = np.matrix([[fib(w[1] + 1), fib(w[1])],
-                              [fib(w[1]), fib(w[1] - 1)]])
+            m.append([[fib(w[1] + 1), fib(w[1])],
+                     [fib(w[1]), fib(w[1] - 1)]])
 
         elif w[0] == 'T':
-            m.insert(0, 'T')
-
-        m.append(matr)
+            m.insert(0, ['T', ''])
 
     return m
 
@@ -214,9 +213,6 @@ word = getTheWord(c)
 
 m = getTheMatrix(word)
 
+print()
 for n in m:
-    print(n)
-
-
-
-
+    print(str(n[0]) + "\n" + str(n[1]) + "\n")
