@@ -1,14 +1,14 @@
 from fractions import Fraction
 import math
-import re
 import networkx as nx
 import matplotlib.pyplot as plt
-import numpy as np
+
 from sympy.solvers import solve
 from sympy import Symbol
 from sympy import sympify
-from sympy.parsing.sympy_parser import (parse_expr, standard_transformations, implicit_application)
-from pandas import DataFrame
+
+from tkinter import *
+from tkinter import ttk
 
 
 def normalizeFraction(f):
@@ -71,12 +71,14 @@ def findThePath(n):
     G.nodes[-2]['value'] = Fraction(0, 1)
     G.nodes[-3]['value'] = Fraction(1, 1)
 
+    #labels = nx.get_node_attributes(G, 'value')
+
     for i in range(-4, -numOfNodes - 1, -1):
         adjList = sorted(list(G.neighbors(i)), reverse=True)
         G.nodes[i]['value'] = fareySum(G.nodes[adjList[0]]['value'], G.nodes[adjList[1]]['value'])
 
-    if G.nodes[-numOfNodes]['value'] != f:
-        print("something is wronh!!!")
+    #if G.nodes[-numOfNodes]['value'] != f:
+    #    print("something is wronh!!!")
 
     #nx.draw(G, with_labels=True, font_weight='bold')
     #plt.show()
@@ -128,25 +130,25 @@ def getTheWord(c):
             for j in range(-w[1]):
                 newWord += "SST"
 
-    print(word)
-    print(newWord)
+#    print(word)
+#    print(newWord)
 
     oldWord = ""
     while oldWord != newWord:
         oldWord = newWord
         newWord = newWord.replace("SSS", "").replace("TT", "")
 
-    print(newWord)
+#    print(newWord)
 
     newWord = newWord.replace("TSS", "Rh").replace("TS", "Rf")
-    print(newWord)
+#    print(newWord)
     newWord = newWord.replace("RhR", "f").replace("RfR", "h")
-    print(newWord)
+#    print(newWord)
 
     while newWord.count('R') > 1:
         newWord = newWord.replace("Rh", "fR").replace("Rf", "hR").replace("RT", "TR").replace("RR", "")
 
-    print(newWord)
+#    print(newWord)
 
     x = []
     i=0
@@ -157,11 +159,10 @@ def getTheWord(c):
             while newWord[i+j] == letter:
                 j+=1
 
-
         x.append((newWord[i], j))
         i += j
 
-    print(x)
+#    print(x)
 
     return x
 
@@ -182,37 +183,95 @@ def getTheMatrix(word):
     return m
 
 
-while True:
-    inp = input("Enter a fraction(as a/b): ")
-    if re.match("[0-9]+\/[1-9][0-9]*", inp):
-        break
+def calculate(f):
+    f = normalizeFraction(f)
+
+#    print(simpleContinuedFraction(f))
+
+    n = simpleContinuedFraction(f)
+
+    sp = findThePath(n)
+
+    '''
+    for s in sp:
+        print(s)
+
+    for i in range(len(sp)):
+        c = integerContinuedFraction(sp[i])
+        for s in c:
+            print(s, end='  ')
+        print()
+    '''
+
+    c1 = integerContinuedFraction(sp[0])
+    word1 = getTheWord(c1)
+    m = []
+    m.append(getTheMatrix(word1))
+
+    if len(sp) > 1:
+        i = 1
+        while sp[0][len(sp[0]) - 2] == sp[i][len(sp[i]) - 2]:
+            i += 1
+        c2 = integerContinuedFraction(sp[i])
+        word2 = getTheWord(c2)
+        m.append(getTheMatrix(word2))
+
+#    print()
+#    for n in m[0]:
+#        print(str(n[0]) + "\n" + str(n[1]) + "\n")
+
+    return m
+
+
+def onclick(*args):
+    if re.match("[0-9]+\/[1-9][0-9]*", inp.get()):
+        f = Fraction(int(inp.get().split('/')[0]), int(inp.get().split('/')[1]))
+        m = calculate(f)
+        result = ""
+
+        for i in range(len(m[0][0])):
+            for j in range(len(m[0])):
+                result += str(m[0][j][i]) + "\t"
+            result += "\n"
+
+        result += "\n\n"
+        if len(m) > 1:
+            for i in range(len(m[1][0])):
+                for j in range(len(m[1])):
+                    result += str(m[1][j][i]) + "\t"
+                result += "\n"
+
+        out.set(result)
+
     else:
-        print("Wrong input.\n")
+        out.set("Wrong input")
 
-f = Fraction(int(inp.split('/')[0]), int(inp.split('/')[1]))
-f = normalizeFraction(f)
 
-print(simpleContinuedFraction(f))
 
-n = simpleContinuedFraction(f)
+root = Tk()
+root.title("MERHABA ŞULE HANIM")
 
-sp = findThePath(n)
+mainframe = ttk.Frame(root, padding="3 3 12 12")
+mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
+mainframe.columnconfigure(0, weight=1)
+mainframe.rowconfigure(0, weight=1)
 
-for s in sp:
-    print(s)
+inp = StringVar()
+out = StringVar()
 
-for i in range(len(sp)):
-    c = integerContinuedFraction(sp[i])
-    for s in c:
-        print(s, end='  ')
-    print()
+inputF = ttk.Entry(mainframe, width=4, textvariable=inp)
+inputF.grid(column=3, row=1, sticky=(W, E))
 
-c = integerContinuedFraction(sp[0])
 
-word = getTheWord(c)
+ttk.Label(mainframe, textvariable=out).grid(column=1, row=2, sticky=(W, E, S))
+ttk.Button(mainframe, text="Calculate", command=onclick).grid(column=4, row=1, sticky=W)
 
-m = getTheMatrix(word)
+ttk.Label(mainframe, text="Enter a fraction (as a/b): ").grid(column=1, row=1, sticky=W)
+#ttk.Label(mainframe, text="Result: ").grid(column=1, row=2, sticky=E)
 
-print()
-for n in m:
-    print(str(n[0]) + "\n" + str(n[1]) + "\n")
+for child in mainframe.winfo_children(): child.grid_configure(padx=5, pady=5)
+
+inputF.focus()
+root.bind('<Return>', onclick)
+
+root.mainloop()
