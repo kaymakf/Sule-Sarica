@@ -1,7 +1,7 @@
 from fractions import Fraction
 import math
 import networkx as nx
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 from sympy.solvers import solve
 from sympy import Symbol
@@ -249,7 +249,7 @@ def onclick(*args):
 
 
 root = Tk()
-root.title("MERHABA ŞULE HANIM")
+#root.title("MERHABA ŞULE HANIM")
 
 mainframe = ttk.Frame(root, padding="3 3 12 12")
 mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
@@ -264,9 +264,9 @@ inputF.grid(column=3, row=1, sticky=(W, E))
 
 
 ttk.Label(mainframe, textvariable=out).grid(column=1, row=2, sticky=(W, E, S))
-ttk.Button(mainframe, text="Calculate", command=onclick).grid(column=4, row=1, sticky=W)
+ttk.Button(mainframe, text="Hesapla", command=onclick).grid(column=4, row=1, sticky=W)
 
-ttk.Label(mainframe, text="Enter a fraction (as a/b): ").grid(column=1, row=1, sticky=W)
+ttk.Label(mainframe, text="Bir kesir girin (a/b): ").grid(column=1, row=1, sticky=W)
 #ttk.Label(mainframe, text="Result: ").grid(column=1, row=2, sticky=E)
 
 for child in mainframe.winfo_children(): child.grid_configure(padx=5, pady=5)
