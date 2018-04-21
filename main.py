@@ -71,7 +71,7 @@ def findThePath(n):
     G.nodes[-2]['value'] = Fraction(0, 1)
     G.nodes[-3]['value'] = Fraction(1, 1)
 
-    #labels = nx.get_node_attributes(G, 'value')
+#    labels = nx.get_node_attributes(G, 'value')
 
     for i in range(-4, -numOfNodes - 1, -1):
         adjList = sorted(list(G.neighbors(i)), reverse=True)
@@ -80,8 +80,8 @@ def findThePath(n):
     #if G.nodes[-numOfNodes]['value'] != f:
     #    print("something is wronh!!!")
 
-    #nx.draw(G, with_labels=True, font_weight='bold')
-    #plt.show()
+#    nx.draw(G, with_labels=True, labels=labels, font_weight='bold')
+#    plt.show()
 
     shortestPaths = list(nx.all_shortest_paths(G, -1, -numOfNodes))
     shortestPathValues = []
@@ -156,7 +156,7 @@ def getTheWord(c):
         letter = newWord[i]
         j=1
         if i+j < len(newWord):
-            while newWord[i+j] == letter:
+            while (i+j) < len(newWord) and newWord[i+j] == letter:
                 j+=1
 
         x.append((newWord[i], j))
@@ -196,6 +196,7 @@ def calculate(f):
     for s in sp:
         print(s)
 
+    
     for i in range(len(sp)):
         c = integerContinuedFraction(sp[i])
         for s in c:
@@ -205,13 +206,18 @@ def calculate(f):
 
     c1 = integerContinuedFraction(sp[0])
     word1 = getTheWord(c1)
+
+#    print(word1)
+
     m = []
     m.append(getTheMatrix(word1))
 
     if len(sp) > 1:
         i = 1
-        while sp[0][len(sp[0]) - 2] == sp[i][len(sp[i]) - 2]:
+        while i < len(sp) and sp[0][len(sp[0]) - 2] == sp[i][len(sp[i]) - 2]:
             i += 1
+        if i == len(sp):
+            i -= 1
         c2 = integerContinuedFraction(sp[i])
         word2 = getTheWord(c2)
         m.append(getTheMatrix(word2))
@@ -259,7 +265,7 @@ mainframe.rowconfigure(0, weight=1)
 inp = StringVar()
 out = StringVar()
 
-inputF = ttk.Entry(mainframe, width=4, textvariable=inp)
+inputF = ttk.Entry(mainframe, width=6, textvariable=inp)
 inputF.grid(column=3, row=1, sticky=(W, E))
 
 
