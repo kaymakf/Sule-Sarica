@@ -188,9 +188,6 @@ def getTheMatrix(word):
 
 def calculate(f):
     f = normalizeFraction(f)
-
-#    print(simpleContinuedFraction(f))
-
     n = simpleContinuedFraction(f)
 
     sp = findThePath(n)
@@ -254,7 +251,6 @@ def onclick(*args):
 
     else:
         out.set("Hatalı giriş")
-
 
 
 root = Tk()
