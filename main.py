@@ -12,7 +12,10 @@ from tkinter import ttk
 
 
 def normalizeFraction(f):
-    return Fraction(f.numerator % f.denominator, f.denominator)
+    if f.numerator % f.denominator != 0:
+        return Fraction(f.numerator % f.denominator, f.denominator)
+    else:
+        return Fraction(1, 1)
 
 def fib(n):
     if n == 0: return 0
@@ -77,8 +80,8 @@ def findThePath(n):
         adjList = sorted(list(G.neighbors(i)), reverse=True)
         G.nodes[i]['value'] = fareySum(G.nodes[adjList[0]]['value'], G.nodes[adjList[1]]['value'])
 
-    #if G.nodes[-numOfNodes]['value'] != f:
-    #    print("something is wronh!!!")
+#    if G.nodes[-numOfNodes]['value'] != f:
+#        print("something is wronh!!!")
 
 #    nx.draw(G, with_labels=True, labels=labels, font_weight='bold')
 #    plt.show()
@@ -250,12 +253,12 @@ def onclick(*args):
         out.set(result)
 
     else:
-        out.set("Wrong input")
+        out.set("Hatalı giriş")
 
 
 
 root = Tk()
-#root.title("MERHABA ŞULE HANIM")
+root.title("")
 
 mainframe = ttk.Frame(root, padding="3 3 12 12")
 mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
@@ -267,7 +270,6 @@ out = StringVar()
 
 inputF = ttk.Entry(mainframe, width=6, textvariable=inp)
 inputF.grid(column=3, row=1, sticky=(W, E))
-
 
 ttk.Label(mainframe, textvariable=out).grid(column=1, row=2, sticky=(W, E, S))
 ttk.Button(mainframe, text="Hesapla", command=onclick).grid(column=4, row=1, sticky=W)
