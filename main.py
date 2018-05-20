@@ -113,7 +113,7 @@ def integerContinuedFraction(p):
 
     return c
 
-def getTheWord(c):
+def getTheWord(c, TorR):
     word = [("TS", int(c[0] - 1))]
 
     for i in range(1, len(c) - 1):
@@ -122,7 +122,7 @@ def getTheWord(c):
 
     word.append(("TSS", 1))
     word.append(("TS", int(c[len(c) - 1] - 1)))
-    word.append(("R", 1))
+    word.append((TorR, 1))
 
     newWord = ""
     for w in word:
@@ -133,25 +133,24 @@ def getTheWord(c):
             for j in range(-w[1]):
                 newWord += "SST"
 
-#    print(word)
-#    print(newWord)
+#    print("\t" + str(word))
 
     oldWord = ""
     while oldWord != newWord:
         oldWord = newWord
         newWord = newWord.replace("SSS", "").replace("TT", "")
 
-#    print(newWord)
 
     newWord = newWord.replace("TSS", "Rh").replace("TS", "Rf")
-#    print(newWord)
+
     newWord = newWord.replace("RhR", "f").replace("RfR", "h")
-#    print(newWord)
+
 
     while newWord.count('R') > 1:
         newWord = newWord.replace("Rh", "fR").replace("Rf", "hR").replace("RT", "TR").replace("RR", "")
 
-#    print(newWord)
+#    print("\t" + str(newWord))
+
 
     x = []
     i=0
@@ -165,7 +164,7 @@ def getTheWord(c):
         x.append((newWord[i], j))
         i += j
 
-#    print(x)
+#    print("\t" + str(x))
 
     return x
 
@@ -181,21 +180,31 @@ def getTheMatrix(word):
                      [fib(w[1]), fib(w[1] - 1)]])
 
         elif w[0] == 'T':
-            m.insert(0, ['T', ''])
+            m.append([[0, -1],
+                     [1, 0]])
+
+        elif w[0] == 'R':
+            m.append([[0, 1],
+                     [1, 0]])
 
     return m
 
 
-def calculate(f):
+def calculate(f, TorR):
     f = normalizeFraction(f)
+#    print("normalize: " + f)
+
+#    print("\n\n\n")
+
     n = simpleContinuedFraction(f)
+#    print("basit sürekli kesir: " + str(n))
+
 
     sp = findThePath(n)
 
     '''
     for s in sp:
         print(s)
-
     
     for i in range(len(sp)):
         c = integerContinuedFraction(sp[i])
@@ -204,8 +213,11 @@ def calculate(f):
         print()
     '''
 
+
     c1 = integerContinuedFraction(sp[0])
-    word1 = getTheWord(c1)
+#    print(str(sp[0]) + " için;\n\ttamsayı sürekli kesir: " + str(c1))
+
+    word1 = getTheWord(c1, TorR)
 
 #    print(word1)
 
@@ -219,7 +231,9 @@ def calculate(f):
         if i == len(sp):
             i -= 1
         c2 = integerContinuedFraction(sp[i])
-        word2 = getTheWord(c2)
+#        print(str(sp[i]) + " için;\n\ttamsayı sürekli kesir: " + str(c2))
+
+        word2 = getTheWord(c2, TorR)
         m.append(getTheMatrix(word2))
 
 #    print()
@@ -228,24 +242,35 @@ def calculate(f):
 
     return m
 
+def matrixToString(m):
+    r = ""
+
+    for i in range(len(m[0][0])):
+        for j in range(len(m[0])):
+            r += str(m[0][j][i]) + "\t"
+        r += "\n"
+
+    r += "\n\n"
+    if len(m) > 1:
+        for i in range(len(m[1][0])):
+            for j in range(len(m[1])):
+                r += str(m[1][j][i]) + "\t"
+            r += "\n"
+
+    return r
+
 
 def onclick(*args):
     if re.match("[0-9]+\/[1-9][0-9]*", inp.get()):
         f = Fraction(int(inp.get().split('/')[0]), int(inp.get().split('/')[1]))
-        m = calculate(f)
+
         result = ""
 
-        for i in range(len(m[0][0])):
-            for j in range(len(m[0])):
-                result += str(m[0][j][i]) + "\t"
-            result += "\n"
+        result += "Otomorfizma:\n"
+        result += matrixToString(calculate(f, "T"))
 
-        result += "\n\n"
-        if len(m) > 1:
-            for i in range(len(m[1][0])):
-                for j in range(len(m[1])):
-                    result += str(m[1][j][i]) + "\t"
-                result += "\n"
+        result += "\n\nAnti otomorfizma:\n"
+        result += matrixToString(calculate(f, "R"))
 
         out.set(result)
 
