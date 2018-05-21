@@ -149,8 +149,13 @@ def getTheWord(c, TorR):
     while newWord.count('R') > 1:
         newWord = newWord.replace("Rh", "fR").replace("Rf", "hR").replace("RT", "TR").replace("RR", "")
 
-#    print("\t" + str(newWord))
+    if newWord.count('R') == 1:
+        if newWord.count("Rh") == 1:
+            newWord = newWord.replace("Rh", "fR")
+        elif newWord.count("Rf") == 1:
+            newWord = newWord.replace("Rf", "hR")
 
+#    print("\t" + str(newWord))
 
     x = []
     i=0
@@ -234,6 +239,9 @@ def calculate(f, TorR):
 #        print(str(sp[i]) + " için;\n\ttamsayı sürekli kesir: " + str(c2))
 
         word2 = getTheWord(c2, TorR)
+
+#        print(word2)
+
         m.append(getTheMatrix(word2))
 
 #    print()
@@ -289,13 +297,13 @@ mainframe.rowconfigure(0, weight=1)
 inp = StringVar()
 out = StringVar()
 
-inputF = ttk.Entry(mainframe, width=6, textvariable=inp)
+inputF = ttk.Entry(mainframe, font="Verdana 10", width=6, textvariable=inp)
 inputF.grid(column=3, row=1, sticky=(W, E))
 
-ttk.Label(mainframe, textvariable=out).grid(column=1, row=2, sticky=(W, E, S))
+ttk.Label(mainframe, font="Verdana 10", textvariable=out).grid(column=1, row=2, sticky=(W, E, S))
 ttk.Button(mainframe, text="Hesapla", command=onclick).grid(column=4, row=1, sticky=W)
 
-ttk.Label(mainframe, text="Bir kesir girin (a/b): ").grid(column=1, row=1, sticky=W)
+ttk.Label(mainframe, font="Verdana 10", text="Bir kesir girin (a/b): ").grid(column=1, row=1, sticky=W)
 #ttk.Label(mainframe, text="Result: ").grid(column=1, row=2, sticky=E)
 
 for child in mainframe.winfo_children(): child.grid_configure(padx=5, pady=5)
