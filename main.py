@@ -1,14 +1,14 @@
-from fractions import Fraction
 import math
-import networkx as nx
-#import matplotlib.pyplot as plt
+import re
+import tkinter as tk
+from fractions import Fraction
 
-from sympy.solvers import solve
+import networkx as nx
+import pygubu
 from sympy import Symbol
 from sympy import sympify
-
-from tkinter import *
-from tkinter import ttk
+from sympy.solvers import solve
+# import matplotlib.pyplot as plt
 
 
 def normalizeFraction(f):
@@ -17,10 +17,12 @@ def normalizeFraction(f):
     else:
         return Fraction(1, 1)
 
+
 def fib(n):
     if n == 0: return 0
     if n == 1 or n == 2: return 1
     return fib(n-1) + fib(n-2)
+
 
 def simpleContinuedFraction(f):
     n = [0]
@@ -34,8 +36,10 @@ def simpleContinuedFraction(f):
     n.append(b.denominator)
     return n
 
+
 def fareySum(f1, f2):
     return Fraction(f1.numerator + f2.numerator, f1.denominator + f2.denominator)
+
 
 def findThePath(n):
     G = nx.Graph()
@@ -98,6 +102,7 @@ def findThePath(n):
 
     return spaths
 
+
 def integerContinuedFraction(p):
     c = [p[1]]
     x = Symbol('x')
@@ -113,7 +118,12 @@ def integerContinuedFraction(p):
 
     return c
 
+wordStr = ""
+
+
 def getTheWord(c, TorR):
+    global wordStr
+
     word = [("TS", int(c[0] - 1))]
 
     for i in range(1, len(c) - 1):
@@ -134,6 +144,8 @@ def getTheWord(c, TorR):
                 newWord += "SST"
 
 #    print("\t" + str(word))
+
+    wordStr += "\n" + str(word)
 
     oldWord = ""
     while oldWord != newWord:
@@ -171,7 +183,10 @@ def getTheWord(c, TorR):
 
 #    print("\t" + str(x))
 
+    wordStr += "\n" + str(x) + "\n"
+
     return x
+
 
 def getTheMatrix(word):
     m = []
@@ -194,23 +209,42 @@ def getTheMatrix(word):
 
     return m
 
+pathsStr = ""
+ICFStr = ""
+
+
+def pathToString(p):
+    a = ""
+    r = ""
+    for i in range(len(p)):
+        if type(p[i]) is Fraction:
+            a = str(Fraction(p[i]).numerator) + '/' + str(Fraction(p[i]).denominator)
+        elif p[i] == math.inf:
+            a = "∞"
+        r += a if i == len(p) - 1 else a + ",  "
+    r += "\n"
+
+    return r
+
 
 def calculate(f, TorR):
+    global pathsStr
+    global ICFStr
+    global wordStr
+
     f = normalizeFraction(f)
-#    print("normalize: " + f)
-
-#    print("\n\n\n")
-
     n = simpleContinuedFraction(f)
 #    print("basit sürekli kesir: " + str(n))
 
-
     sp = findThePath(n)
 
+    pathsStr = ""
+    ICFStr = ""
+
+    if TorR == 'R':
+        for p in sp: pathsStr += pathToString(p)
+
     '''
-    for s in sp:
-        print(s)
-    
     for i in range(len(sp)):
         c = integerContinuedFraction(sp[i])
         for s in c:
@@ -218,9 +252,13 @@ def calculate(f, TorR):
         print()
     '''
 
-
     c1 = integerContinuedFraction(sp[0])
 #    print(str(sp[0]) + " için;\n\ttamsayı sürekli kesir: " + str(c1))
+    if TorR == 'R':
+        ICFStr += "For the path (" + (pathToString(sp[0]).split("\n"))[0] + "):\n" + str([int(c) for c in c1]) + "\n"
+        wordStr += "\nAnti Automorphism:\n"
+    elif TorR == 'T':
+        wordStr += "\nAutomorphism:\n"
 
     word1 = getTheWord(c1, TorR)
 
@@ -237,6 +275,7 @@ def calculate(f, TorR):
             i -= 1
         c2 = integerContinuedFraction(sp[i])
 #        print(str(sp[i]) + " için;\n\ttamsayı sürekli kesir: " + str(c2))
+        if TorR == 'R': ICFStr += "For the path (" + (pathToString(sp[i]).split("\n"))[0] + "):\n" + str([int(c) for c in c2]) + "\n"
 
         word2 = getTheWord(c2, TorR)
 
@@ -249,6 +288,7 @@ def calculate(f, TorR):
 #        print(str(n[0]) + "\n" + str(n[1]) + "\n")
 
     return m
+
 
 def matrixToString(m):
     r = ""
@@ -268,24 +308,71 @@ def matrixToString(m):
     return r
 
 
-def onclick(*args):
+def onclick():
+    global inp
+    global out
+    global pathsStr
+    global ICFStr
+    global wordStr
+
+    wordStr = ""
+
     if re.match("[0-9]+\/[1-9][0-9]*", inp.get()):
         f = Fraction(int(inp.get().split('/')[0]), int(inp.get().split('/')[1]))
 
         result = ""
 
-        result += "Otomorfizma:\n"
+        result += "Automorphism:\n"
         result += matrixToString(calculate(f, "T"))
 
-        result += "\n\nAnti otomorfizma:\n"
+        result += "\n\nAnti Automorphism:\n"
         result += matrixToString(calculate(f, "R"))
+
+        outPaths.set(pathsStr)
+        outICF.set(ICFStr)
+        outWord.set(wordStr)
 
         out.set(result)
 
     else:
-        out.set("Hatalı giriş")
+        outPaths.set("Wrong input")
+        outICF.set("Wrong input")
+        outWord.set("Wrong input")
+        out.set("Wrong input")
 
 
+class Application(pygubu.TkApplication):
+    def _create_ui(self):
+        global inp
+        global out
+        global outPaths
+        global outICF
+        global outWord
+        self.builder = builder = pygubu.Builder()
+        builder.add_from_file('ui.xml')
+        self.mainwindow = builder.get_object('container', self.master)
+        builder.connect_callbacks({'onClick': onclick})
+        self.set_title("")
+        inp = builder.get_variable('inp')
+        out = builder.get_variable('out')
+        outPaths = builder.get_variable('outPaths')
+        outICF = builder.get_variable('outICF')
+        outWord = builder.get_variable('outWord')
+
+
+if __name__ == '__main__':
+    root = tk.Tk()
+    inp = tk.StringVar()
+    out = tk.StringVar()
+    outPaths = tk.StringVar()
+    outICF = tk.StringVar()
+    outWord = tk.StringVar()
+
+    app = Application(root)
+    app.run()
+
+
+'''
 root = Tk()
 root.title("")
 
@@ -312,3 +399,4 @@ inputF.focus()
 root.bind('<Return>', onclick)
 
 root.mainloop()
+'''
