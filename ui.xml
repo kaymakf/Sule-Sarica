@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <interface>
   <object class="ttk.Frame" id="container">
-    <property name="height">600</property>
+    <property name="height">400</property>
     <property name="width">500</property>
     <layout>
       <property name="column">0</property>
@@ -25,7 +25,7 @@
     </layout>
     <child>
       <object class="ttk.Frame" id="topFrame">
-        <property name="height">100</property>
+        <property name="height">0</property>
         <property name="padding">5</property>
         <property name="width">500</property>
         <layout>
@@ -104,7 +104,7 @@
     </child>
     <child>
       <object class="ttk.Frame" id="bottomFrame">
-        <property name="height">300</property>
+        <property name="height">400</property>
         <property name="width">500</property>
         <layout>
           <property name="column">0</property>
@@ -124,7 +124,7 @@
         </layout>
         <child>
           <object class="ttk.Notebook" id="Notebook_1">
-            <property name="height">300</property>
+            <property name="height">400</property>
             <property name="width">500</property>
             <layout>
               <property name="column">0</property>
@@ -157,7 +157,7 @@
                     </layout>
                     <child>
                       <object class="ttk.Label" id="Label_1">
-                        <property name="font">TkTextFont</property>
+                        <property name="font">{Cambria} 12 {}</property>
                         <property name="textvariable">string:outPaths</property>
                         <layout>
                           <property name="column">0</property>
@@ -195,7 +195,7 @@
                     </layout>
                     <child>
                       <object class="ttk.Label" id="Label_6">
-                        <property name="font">TkTextFont</property>
+                        <property name="font">{Cambria} 12 {}</property>
                         <property name="textvariable">string:outICF</property>
                         <layout>
                           <property name="column">0</property>
@@ -233,7 +233,7 @@
                     </layout>
                     <child>
                       <object class="ttk.Label" id="Label_7">
-                        <property name="font">TkTextFont</property>
+                        <property name="font">{Cambria} 12 {}</property>
                         <property name="textvariable">string:outWord</property>
                         <layout>
                           <property name="column">0</property>
@@ -272,8 +272,9 @@
                     </layout>
                     <child>
                       <object class="ttk.Label" id="Label_8">
-                        <property name="font">TkTextFont</property>
+                        <property name="font">{Cambria} 12 {}</property>
                         <property name="textvariable">string:out</property>
+                        <property name="underline">0</property>
                         <layout>
                           <property name="column">0</property>
                           <property name="ipadx">10</property>

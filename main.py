@@ -122,6 +122,36 @@ wordStr = ""
 
 
 def getTheWord(c, TorR):
+    def blockformToString(b):
+        s = ['\u2070', '\u00B9', '\u00B2', '\u00B3', '\u2074', '\u2075', '\u2076', '\u2077', '\u2078', '\u2079']
+        r = ""
+
+        def exponent(a1):
+            h = ""
+            if a1 > 1:
+                exp = []
+                if a1 > 9:
+                    for step in str(a1):
+                        exp.append(int(step))
+                else:
+                    exp.append(a1)
+
+                for w in exp:
+                    h += s[w]
+            return h
+
+        for a in b:
+            if a[0] == 'TSS':
+                r += '(TS' + s[2] + ')'
+            elif a[0] == 'TS':
+                r += '(' + a[0] + ')'
+            else:
+                r += a[0]
+
+            r += exponent(a[1]) + ' '
+
+        return r
+
     global wordStr
 
     word = [("TS", int(c[0] - 1))]
@@ -145,12 +175,43 @@ def getTheWord(c, TorR):
 
 #    print("\t" + str(word))
 
-    wordStr += "\n" + str(word)
-
     oldWord = ""
     while oldWord != newWord:
         oldWord = newWord
         newWord = newWord.replace("SSS", "").replace("TT", "")
+
+    i=0
+    blockform=[]
+
+    while i < len(newWord):
+        if i+3 > len(newWord):
+            break
+        else:
+            temp = newWord[i : i+3]
+
+            if temp == 'TSS':
+                j = 3
+                count = 1
+                while newWord[i+j : i+j+3] == 'TSS':
+                    count += 1
+                    j+=3
+                blockform.append(('TSS', count))
+                i += j
+
+            else:
+                j = 2
+                count = 1
+                while newWord[i+j : i+j+2] == 'TS' and newWord[i+j+2] != 'S':
+                    count += 1
+                    j+=2
+                blockform.append(('TS', count))
+                i += j
+
+    while i < len(newWord):
+        blockform.append((newWord[i], 1))
+        i += 1
+
+    wordStr += "\n" + blockformToString(blockform)
 
 
     newWord = newWord.replace("TSS", "Rh").replace("TS", "Rf")
@@ -183,7 +244,7 @@ def getTheWord(c, TorR):
 
 #    print("\t" + str(x))
 
-    wordStr += "\n" + str(x) + "\n"
+    wordStr += "\n" + blockformToString(x) + '\n'
 
     return x
 
@@ -220,7 +281,7 @@ def pathToString(p):
         if type(p[i]) is Fraction:
             a = str(Fraction(p[i]).numerator) + '/' + str(Fraction(p[i]).denominator)
         elif p[i] == math.inf:
-            a = "∞"
+            a = "\u221E"
         r += a if i == len(p) - 1 else a + ",  "
     r += "\n"
 
@@ -275,7 +336,7 @@ def calculate(f, TorR):
             i -= 1
         c2 = integerContinuedFraction(sp[i])
 #        print(str(sp[i]) + " için;\n\ttamsayı sürekli kesir: " + str(c2))
-        if TorR == 'R': ICFStr += "For the path (" + (pathToString(sp[i]).split("\n"))[0] + "):\n" + str([int(c) for c in c2]) + "\n"
+        if TorR == 'R': ICFStr += "\nFor the path (" + (pathToString(sp[i]).split("\n"))[0] + "):\n" + str([int(c) for c in c2]) + "\n"
 
         word2 = getTheWord(c2, TorR)
 
@@ -317,7 +378,7 @@ def onclick():
 
     wordStr = ""
 
-    if re.match("[0-9]+\/[1-9][0-9]*", inp.get()):
+    if re.match("-*[0-9]+\/[1-9][0-9]*", inp.get()):
         f = Fraction(int(inp.get().split('/')[0]), int(inp.get().split('/')[1]))
 
         result = ""
@@ -353,11 +414,18 @@ class Application(pygubu.TkApplication):
         self.mainwindow = builder.get_object('container', self.master)
         builder.connect_callbacks({'onClick': onclick})
         self.set_title("")
+        self.set_resizable()
         inp = builder.get_variable('inp')
         out = builder.get_variable('out')
         outPaths = builder.get_variable('outPaths')
         outICF = builder.get_variable('outICF')
         outWord = builder.get_variable('outWord')
+
+    def quit(self, event=None):
+        self.mainwindow.quit()
+
+    def run(self):
+        self.mainwindow.mainloop()
 
 
 if __name__ == '__main__':
@@ -370,33 +438,3 @@ if __name__ == '__main__':
 
     app = Application(root)
     app.run()
-
-
-'''
-root = Tk()
-root.title("")
-
-mainframe = ttk.Frame(root, padding="3 3 12 12")
-mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
-mainframe.columnconfigure(0, weight=1)
-mainframe.rowconfigure(0, weight=1)
-
-inp = StringVar()
-out = StringVar()
-
-inputF = ttk.Entry(mainframe, font="Verdana 10", width=6, textvariable=inp)
-inputF.grid(column=3, row=1, sticky=(W, E))
-
-ttk.Label(mainframe, font="Verdana 10", textvariable=out).grid(column=1, row=2, sticky=(W, E, S))
-ttk.Button(mainframe, text="Hesapla", command=onclick).grid(column=4, row=1, sticky=W)
-
-ttk.Label(mainframe, font="Verdana 10", text="Bir kesir girin (a/b): ").grid(column=1, row=1, sticky=W)
-#ttk.Label(mainframe, text="Result: ").grid(column=1, row=2, sticky=E)
-
-for child in mainframe.winfo_children(): child.grid_configure(padx=5, pady=5)
-
-inputF.focus()
-root.bind('<Return>', onclick)
-
-root.mainloop()
-'''
