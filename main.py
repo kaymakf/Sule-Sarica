@@ -293,7 +293,7 @@ def calculate(f, TorR):
     global ICFStr
     global wordStr
 
-    f = normalizeFraction(f)
+#    f = normalizeFraction(f)
     n = simpleContinuedFraction(f)
 #    print("basit sürekli kesir: " + str(n))
 
@@ -381,19 +381,26 @@ def onclick():
     if re.match("-*[0-9]+\/[1-9][0-9]*", inp.get()):
         f = Fraction(int(inp.get().split('/')[0]), int(inp.get().split('/')[1]))
 
-        result = ""
+        if 0 < f <= 1:
+            result = ""
 
-        result += "Automorphism:\n"
-        result += matrixToString(calculate(f, "T"))
+            result += "Automorphism:\n"
+            result += matrixToString(calculate(f, "T"))
 
-        result += "\n\nAnti Automorphism:\n"
-        result += matrixToString(calculate(f, "R"))
+            result += "\n\nAnti Automorphism:\n"
+            result += matrixToString(calculate(f, "R"))
 
-        outPaths.set(pathsStr)
-        outICF.set(ICFStr)
-        outWord.set(wordStr)
+            outPaths.set(pathsStr)
+            outICF.set(ICFStr)
+            outWord.set(wordStr)
 
-        out.set(result)
+            out.set(result)
+
+        else:
+            outPaths.set("Input must be between 0 and 1.")
+            outICF.set("Input must be between 0 and 1")
+            outWord.set("Input must be between 0 and 1")
+            out.set("Input must be between 0 and 1")
 
     else:
         outPaths.set("Wrong input")
